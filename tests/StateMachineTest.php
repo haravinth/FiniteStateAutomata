@@ -25,6 +25,28 @@ class StateMachineTest extends TestCase {
     }
 
     /**
+     * This test will check if the final state is true
+     */
+    public function testIsStateFinalTrue() {
+
+        $stateMachine = new StateMachine();
+        $stateMachine->addState('S0',array('initial', 'final'), 0);
+        $stateMachine->addState('S1',array('current', 'final'), 1);
+        $stateMachine->addState('S2',array('current', 'final'), 2);
+
+        $stateMachine->setTransition(0, 'S0', 'S0');
+        $stateMachine->setTransition(1, 'S0', 'S1');
+        $stateMachine->setTransition(0, 'S1', 'S2');
+        $stateMachine->setTransition(1, 'S1', 'S0');
+        $stateMachine->setTransition(0, 'S2', 'S1');
+        $stateMachine->setTransition(1, 'S2', 'S2');
+
+        $stateMachine->processTransition('1010');
+
+        $this->assertTrue($stateMachine->isStateFinal());
+    }
+
+    /**
      * This test will use S2 as the only final state
      */
     public function testOneFinalState() {
@@ -41,13 +63,13 @@ class StateMachineTest extends TestCase {
         $stateMachine->setTransition(0, 'S2', 'S1');
         $stateMachine->setTransition(1, 'S2', 'S2');
 
-        $this->assertEquals('S0',$stateMachine->processTransition('10101'));
+        $this->assertEquals('S1',$stateMachine->processTransition('1010'));
     }
 
     /**
-     * This test will use S2 as the only final state and check if the state is final at the end of the run
+     * This test will use S2 as the only final state and check if the state final is false at the end of the run
      */
-    public function testIsStateFinal() {
+    public function testIsStateFinalFalse() {
 
         $stateMachine = new StateMachine();
         $stateMachine->addState('S0',array('initial'), 0);
@@ -60,8 +82,10 @@ class StateMachineTest extends TestCase {
         $stateMachine->setTransition(1, 'S1', 'S0');
         $stateMachine->setTransition(0, 'S2', 'S1');
         $stateMachine->setTransition(1, 'S2', 'S2');
+
         $stateMachine->processTransition('10101');
-        $this->assertEquals(False,$stateMachine->isStateFinal());
+        
+        $this->assertFalse($stateMachine->isStateFinal());
     }
 
     /**
